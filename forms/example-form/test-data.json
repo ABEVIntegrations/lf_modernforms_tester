@@ -1,0 +1,9 @@
+{
+  "1": "John Doe",
+  "2": "jdoe@example.com",
+  "6": "Assessor",
+  "35": "Jane Smith",
+  "36": "jsmith@example.gov",
+  "37": "DOMAIN\\jsmith",
+  "42": { "dateStr": "2026-12-15", "timeStr": "", "dateTimeObj": null }
+}
