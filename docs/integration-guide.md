@@ -43,6 +43,12 @@ The inject snippet reads the bridge field's value as the form loads. Because Las
 
 > **Pasting into the field at runtime and reloading does not work** — Laserfiche resets the form on reload and the JSON is gone before inject runs. Default Value is the only place that survives a reload.
 
+#### Live editing during testing
+
+Once the form is open and inject has run from the Default Value, you can tweak the JSON directly in the bridge field on the page. As soon as you click out of the bridge field (blur), inject re-runs and re-populates the other fields with your edited values. No reload needed.
+
+This is the fast feedback loop for iterating on test data: change a value, tab out, see the form update. When you've found a JSON shape you like, copy it back into the bridge field's Default Value in the designer so it persists across reloads.
+
 ### Size limits and the bridge field
 
 Laserfiche's Default Value input has practical size limits (the exact ceiling depends on form version; multi-line text fields hold significantly more than single-line, but neither is unbounded). For larger forms:
