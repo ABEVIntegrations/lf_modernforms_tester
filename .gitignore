@@ -4,6 +4,7 @@ Thumbs.db
 
 # Editor
 .vscode/
+.claude/
 .idea/
 *.swp
 *~
@@ -21,3 +22,4 @@ node_modules/
 # Local scratch
 scratch/
 *.scratch.*
+
