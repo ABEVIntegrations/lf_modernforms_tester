@@ -2,6 +2,49 @@
 
 How to drop the capture/inject snippets into existing form inline JS without breaking what's already there.
 
+## Two workflows: pick the one that matches your audience
+
+This repo ships two pairs of snippets. They do the same job — capture and replay form values — but target different users.
+
+| Workflow                | Snippets                                                       | Where the JSON lives                  | Best for                                                    |
+|-------------------------|----------------------------------------------------------------|---------------------------------------|-------------------------------------------------------------|
+| **Developer (console)** | `snippets/capture.js`, `snippets/inject.js`                    | Browser DevTools console + inline JS  | You're comfortable with DevTools and editing inline JS      |
+| **End user (bridge field)** | `snippets/capture-via-field.js`, `snippets/inject-via-field.js` | A text field on the form itself       | Form designers / QA / business users who want zero DevTools |
+
+The two workflows are independent — pick one per form. The rest of this guide covers placement and pre-deploy hygiene that applies to both.
+
+## End-user workflow (no DevTools)
+
+If you'd rather not touch DevTools, use the bridge-field variants. The idea is simple: a single text field on the form acts as the I/O surface. Capture writes JSON into it; inject reads JSON out of it.
+
+### One-time setup per form
+
+1. Add a **Multi Line text field** to your form. Label it "Test Data Bridge" (or anything memorable). Make it large enough to comfortably display a few hundred characters of JSON.
+2. Note its `fieldId`. (In the form designer, click the field — the id is in its properties.)
+3. Open `snippets/capture-via-field.js` and `snippets/inject-via-field.js`. In each, set `BRIDGE_FIELD_ID` to your field's id.
+
+### Capturing
+
+1. Paste `capture-via-field.js` at the bottom of your form's inline JS.
+2. If your form already has an `onFormSubmission` handler, comment it out temporarily.
+3. Save the form. Open it, fill out fields with your desired test values.
+4. Click Submit. Submission is blocked, and the bridge field on the page now contains pretty-printed JSON of every other field's value.
+5. Copy that JSON out of the bridge field. Save it to `forms/<form-name>/test-data.json` for safekeeping.
+6. Remove the capture snippet from inline JS, restore the original `onFormSubmission`.
+
+### Injecting
+
+1. Paste `inject-via-field.js` at the bottom of your form's inline JS.
+2. Open the form. Paste your saved JSON into the bridge field.
+3. Reload the page. Every field auto-populates.
+4. To turn injection off temporarily, clear the bridge field — the snippet no-ops on empty input.
+
+### Before deploy
+
+- Set `INJECT_TEST_DATA = false` in the inject snippet (or remove the snippet entirely).
+- Remove the bridge field from the form layout, or hide it from end users.
+- Restore any commented-out `onFormSubmission` logic.
+
 ## Where to place the snippet
 
 ### Option A — Bottom of file (recommended default)
