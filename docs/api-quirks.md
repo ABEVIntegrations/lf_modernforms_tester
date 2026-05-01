@@ -87,10 +87,10 @@ JavaScript silently corrupts strings like `"DOMAIN\username"` because `\u`, `\r`
 
 ```javascript
 // ✓ Correct
-"CORTLANDT\\rbecker"
+"CORTLAND\\jyecker"
 
 // ✗ Silently wrong — \r becomes a carriage return character
-"CORTLANDT\rbecker"
+"CORTLAND\jyecker"
 ```
 
 If generating these literals from a SQL query, the SQL output must produce doubled backslashes too — use `REPLACE()` to escape them in the result string.

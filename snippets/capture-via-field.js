@@ -29,9 +29,17 @@
  *   - CustomHTML, Page, and Form components have no value and are skipped.
  *   - Each capture overwrites the bridge field. Copy the JSON out before
  *     re-capturing if you want to keep the previous version.
+ *   - For inject to actually apply the captured JSON on next load, paste
+ *     it into the bridge field's *Default Value* in the form designer.
+ *     Pasting into the field at runtime does not survive a reload.
+ *   - If your form has too many fields for the captured JSON to fit as a
+ *     Default Value, set MINIFY_OUTPUT = true to emit single-line JSON
+ *     (~40% smaller). For very large forms, switch to the console-based
+ *     snippets/capture.js + snippets/inject.js workflow instead.
  */
 
-const BRIDGE_FIELD_ID = 0; // <-- replace with your bridge field's fieldId
+const BRIDGE_FIELD_ID = 0;     // <-- replace with your bridge field's fieldId
+const MINIFY_OUTPUT = false;   // <-- set true for compact single-line JSON
 
 LFForm.onFormSubmission(() => {
   if (!BRIDGE_FIELD_ID) {
@@ -50,8 +58,10 @@ LFForm.onFormSubmission(() => {
     captured[f.fieldId] = LFForm.getFieldValues(f);
   });
 
-  const json = JSON.stringify(captured, null, 2);
+  const json = MINIFY_OUTPUT
+    ? JSON.stringify(captured)
+    : JSON.stringify(captured, null, 2);
   LFForm.setFieldValues({ fieldId: BRIDGE_FIELD_ID }, json);
 
-  return { error: "Test data captured. Copy the JSON from the bridge field on this form." };
+  return { error: "Test data captured. Copy the JSON from the bridge field, then paste it into that field's Default Value in the form designer for inject to use it." };
 });

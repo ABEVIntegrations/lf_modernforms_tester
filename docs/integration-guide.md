@@ -34,10 +34,22 @@ If you'd rather not touch DevTools, use the bridge-field variants. The idea is s
 
 ### Injecting
 
+The inject snippet reads the bridge field's value as the form loads. Because Laserfiche clears all runtime values on reload, the JSON has to be present **before** the form opens — i.e. set as the bridge field's **default value** in the form designer.
+
 1. Paste `inject-via-field.js` at the bottom of your form's inline JS.
-2. Open the form. Paste your saved JSON into the bridge field.
-3. Reload the page. Every field auto-populates.
-4. To turn injection off temporarily, clear the bridge field — the snippet no-ops on empty input.
+2. In the form designer, open the Test Data Bridge field's properties and paste your saved JSON into its **Default Value**.
+3. Save the form, then open it. The bridge field shows up pre-filled, the inject snippet reads it, and every other field populates.
+4. To turn injection off temporarily, either flip `INJECT_TEST_DATA = false` in the snippet, or clear the field's Default Value in the designer.
+
+> **Pasting into the field at runtime and reloading does not work** — Laserfiche resets the form on reload and the JSON is gone before inject runs. Default Value is the only place that survives a reload.
+
+### Size limits and the bridge field
+
+Laserfiche's Default Value input has practical size limits (the exact ceiling depends on form version; multi-line text fields hold significantly more than single-line, but neither is unbounded). For larger forms:
+
+- Capture defaults to **pretty-printed** JSON for readability. If your default value field can't hold it, set `MINIFY_OUTPUT = true` at the top of `capture-via-field.js` to emit single-line JSON instead — typically ~40% smaller.
+- If even minified JSON is too large for the Default Value, fall back to the **developer (console) workflow** (`snippets/capture.js` + `snippets/inject.js`). It has no size limit because the JSON lives in inline JS, not on the form.
+- Don't try to split JSON across multiple bridge fields — the snippets don't support that and the complexity isn't worth it. Switch workflows instead.
 
 ### Before deploy
 
