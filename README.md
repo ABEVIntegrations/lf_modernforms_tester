@@ -4,11 +4,24 @@ Personal toolkit for working with Laserfiche modern Forms inline JavaScript — 
 
 ## What this solves
 
+You have a form that you need to test many times. Maybe it triggers a workflow and/or a document merge rule and you're tired of entering test data into the form to make downstream tweaks. 
+
 Modern Laserfiche Forms have no built-in way to save test data. Filling out a 30-field form by hand every time you tweak a script is painful. This repo provides:
 
 - **Capture/inject snippets** to record current form values as JSON and replay them on page load
 - **API quirks documentation** — the not-obvious sandbox behaviors that took real time to figure out
 - **Per-form source backups** — version-controlled copies of each form's inline JS
+
+## tl;dr No Dev Tools Super Quick Start
+
+1. Paste `capture-via-field.js` at the bottom of your form's inline JS.
+2. If your form already has an `onFormSubmission` handler, comment it out temporarily.
+3. Save the form. Open it, fill out fields with your desired test values.
+4. Click Submit. Submission is blocked, and the bridge field on the page now contains pretty-printed JSON of every other field's value.
+5. Copy that JSON out of the bridge field. Save it to `forms/<form-name>/test-data.json` for safekeeping.
+6. Remove the capture snippet from inline JS, restore the original `onFormSubmission`.
+
+Go here for the full instructions: docs/integration-guide.md (docs/integration-guide.md)
 
 ## Quick start
 
