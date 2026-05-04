@@ -21,7 +21,7 @@ Modern Laserfiche Forms have no built-in way to save test data. Filling out a 30
 5. Copy that JSON out of the bridge field. Save it to `forms/<form-name>/test-data.json` for safekeeping.
 6. Remove the capture snippet from inline JS, restore the original `onFormSubmission`.
 
-Go here for the full instructions: docs/integration-guide.md (docs/integration-guide.md)
+Go here for the full instructions: [Integration guide](docs/integration-guide.md)
 
 ## Quick start
 
