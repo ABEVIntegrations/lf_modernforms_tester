@@ -1,6 +1,6 @@
 # LFForm API Quirks
 
-Hard-won knowledge about the Laserfiche modern Forms sandbox. Official docs are sparse on most of these — they were figured out by trial and `console.log`.
+Hard-won knowledge about the Laserfiche modern Forms sandbox. Official docs can be limited on some of these — they were figured out by trial and `console.log`.
 
 ## Event handler signatures
 
