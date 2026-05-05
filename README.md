@@ -57,4 +57,3 @@ laserfiche-form-tools/
 - Laserfiche modern Forms (sandboxed JS environment)
 - No jQuery, no direct DOM manipulation, no `alert()`
 - All work flows through the `LFForm.*` API
-- Portal: https://portal.laserfiche.com/p4167/forms/
