@@ -36,6 +36,24 @@ const value = Array.isArray(raw) ? raw[0] : raw;
 
 Shape: `{ dateStr, timeStr, dateTimeObj }`. Extract `.dateStr` for the formatted date string.
 
+### `findFields` predicate is unreliable
+
+`LFForm.findFields(predicate)` does not reliably honor the predicate — fields you tried to filter out can still come back. Pass `() => true` and filter the result array yourself.
+
+```javascript
+// ✓ Reliable
+const SKIP = new Set(['CustomHTML', 'Page', 'Form']);
+const fields = LFForm.findFields(() => true)
+  .filter(f => !SKIP.has(f.componentType));
+
+// ✗ Predicate may be ignored — CustomHTML still comes back
+const fields = LFForm.findFields(f => f.componentType !== 'CustomHTML');
+```
+
+### `getFieldValues` on valueless components returns the field definition
+
+`CustomHTML`, `Page`, and `Form` components have no user value. Calling `getFieldValues` on them returns the **whole field object** (`componentId`, `componentType`, `data`, `lastChange`, etc.) instead of `undefined` or `null`. Always exclude these components before iterating, or you will end up serializing form schema into your output.
+
 ### `setFieldValues` syntax
 
 Value is the **second argument**, not a property of the options object.
@@ -60,6 +78,21 @@ Return `{ error: '...' }` from `LFForm.onFormSubmission()` to block submission w
 LFForm.onFormSubmission(() => {
   if (someCondition) return { error: "Cannot submit because..." };
 });
+```
+
+## Multi Line field validator rejects HTML-ish characters
+
+LF validates Multi Line text fields against a built-in XSS pattern and refuses to submit if the value contains `<` followed by `a-z` / `/` / `?` / `!`, or an `&#…` entity. This breaks any workflow that stores JSON, markup, or arbitrary user content in a Multi Line field (e.g. the bridge-field capture/inject pattern).
+
+The error message is:
+
+> This field contains illegal character combinations (e.g., "&# or '<' next to (a-z, /, ?, !)"). Please remove these characters before submitting the form.
+
+Workaround: escape `<` and `&` as Unicode escapes when writing into the field. `JSON.parse` decodes them transparently on the way back out, so consumers do not need to change.
+
+```javascript
+const escapeForLF = s => s.replace(/</g, '\\u003c').replace(/&/g, '\\u0026');
+LFForm.setFieldValues({ fieldId: BRIDGE_FIELD_ID }, escapeForLF(json));
 ```
 
 ## Sandbox limitations
