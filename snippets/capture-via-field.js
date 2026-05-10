@@ -41,16 +41,21 @@
 const BRIDGE_FIELD_ID = 0;     // <-- replace with your bridge field's fieldId
 const MINIFY_OUTPUT = false;   // <-- set true for compact single-line JSON
 
+const SKIP_TYPES = new Set(['CustomHTML', 'Page', 'Form']);
+
+// LF multiline fields reject "<" followed by a-z/?!/ and "&#" sequences.
+// Escape as Unicode so the bridge field stays validator-safe; JSON.parse on
+// inject decodes them back transparently.
+const escapeForLF = s => s.replace(/</g, '\\u003c').replace(/&/g, '\\u0026');
+
 LFForm.onFormSubmission(() => {
   if (!BRIDGE_FIELD_ID) {
     return { error: "capture-via-field: BRIDGE_FIELD_ID is not set. Edit the snippet and set it to your bridge field's id." };
   }
 
-  const fields = LFForm.findFields(f =>
-    f.componentType !== 'CustomHTML' &&
-    f.componentType !== 'Page' &&
-    f.componentType !== 'Form' &&
-    f.fieldId !== BRIDGE_FIELD_ID
+  // findFields predicate is unreliable across LF versions; filter post-hoc.
+  const fields = LFForm.findFields(() => true).filter(f =>
+    !SKIP_TYPES.has(f.componentType) && f.fieldId !== BRIDGE_FIELD_ID
   );
 
   const captured = {};
@@ -58,9 +63,9 @@ LFForm.onFormSubmission(() => {
     captured[f.fieldId] = LFForm.getFieldValues(f);
   });
 
-  const json = MINIFY_OUTPUT
+  const json = escapeForLF(MINIFY_OUTPUT
     ? JSON.stringify(captured)
-    : JSON.stringify(captured, null, 2);
+    : JSON.stringify(captured, null, 2));
   LFForm.setFieldValues({ fieldId: BRIDGE_FIELD_ID }, json);
 
   return { error: "Test data captured. Copy the JSON from the bridge field, then paste it into that field's Default Value in the form designer for inject to use it." };

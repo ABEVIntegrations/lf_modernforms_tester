@@ -27,12 +27,12 @@
  *     can right-click → "Copy object" in the console if preferred.
  */
 
+const SKIP_TYPES = new Set(['CustomHTML', 'Page', 'Form']);
+
 LFForm.onFormSubmission(() => {
-  const fields = LFForm.findFields(f =>
-    f.componentType !== 'CustomHTML' &&
-    f.componentType !== 'Page' &&
-    f.componentType !== 'Form'
-  );
+  // findFields predicate is unreliable across LF versions; filter post-hoc.
+  const fields = LFForm.findFields(() => true)
+    .filter(f => !SKIP_TYPES.has(f.componentType));
 
   const captured = {};
   fields.forEach(f => {
